@@ -18,7 +18,7 @@ class Game {
   addUser(userId: string, userName: string, ws: WebSocket) {
     const user = this.findUser(userId);
     if (user) {
-      user.isActive = true;
+      // user.isActive = true;
       return;
     }
     this.Users.push(new User(userId, userName, ws));
