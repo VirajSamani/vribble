@@ -5,6 +5,7 @@ class User {
     userName: string;
     isActive: boolean;
     ws: WebSocket;
+    isGuessed: boolean = false;
 
     constructor(userId: string, userName: string, ws: WebSocket) {
         this.userId = userId;

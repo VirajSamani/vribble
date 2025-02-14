@@ -1,10 +1,16 @@
 enum MessageType {
   INIT = "init",
-  JOIN_ROOM = "join_room",
   LEAVE_ROOM = "leave_room",
   MOVE = "move",
-  STOP = "stop",
+  GAME_STARTED = "game_started",
   JOINED_ROOM = "joined_room",
+  DRAW = "draw",
+  REPLACE_PATH = "replace_path",
+  MESSAGE = "message",
+  GUESS_SUCCESS = "guess_success",
+  SELECT_WORD = "select_word",
+  SELECECTING_WORD = 'selecting_word',
+  START_ROUND = 'start_round'
 }
 
 export { MessageType };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
@@ -31,9 +31,17 @@ const ThemeProviderWrapper: React.FC<{ children: React.ReactNode }> = ({ childre
           background: { default: mode === "light" ? "#ffffff" : "#121212" },
           text: { primary: mode === "light" ? "#000" : "#fff" },
         },
+        typography: {
+          fontFamily: "Comic Sans MS, cursive",
+        },
       }),
     [mode]
   );
+
+  useEffect(() => {
+    // set default dark theme 
+    setMode("dark");
+  }, []);
 
   return (
     <ThemeContext.Provider value={{ toggleTheme, mode }}>
