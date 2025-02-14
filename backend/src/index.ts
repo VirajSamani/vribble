@@ -44,21 +44,34 @@ wss.on("connection", function connection(ws: WebSocket) {
 
         if (game.gameStarted) {
           // send select word to messaged user
-          const currentUser = game.findUser(message.userId);
-          currentUser?.ws.send(
-            JSON.stringify({
-              type: MessageType.SELECECTING_WORD,
-              roomCode: message.roomCode,
-              selectingUser: game.Users[0].userName,
-            })
-          );
+          const currentRequestingUser = game.findUser(message.userId);
+
+          if(currentRequestingUser?.userId === game.currentUser?.userId) {
+            currentRequestingUser?.ws.send(
+              JSON.stringify({
+                type: MessageType.SELECT_WORD,
+                roomCode: message.roomCode,
+                words: game.gameWordList(),
+              })
+            );
+          } else {
+            currentRequestingUser?.ws.send(
+              JSON.stringify({
+                type: MessageType.SELECECTING_WORD,
+                roomCode: message.roomCode,
+                selectingUser: game.Users[0].userName,
+              })
+            );
+          }
 
           if (game.gameWord) {
-            currentUser?.ws.send(
+            currentRequestingUser?.ws.send(
               JSON.stringify({
                 type: MessageType.START_ROUND,
                 roomCode: message.roomCode,
                 isDrawAllowed: game.currentUser?.userId === message.userId,
+                word: game.currentUser?.userId === message.userId ? game.gameWord : "",
+                wordLength: game.gameWord.length,    
               })
             );
           }
@@ -183,6 +196,8 @@ wss.on("connection", function connection(ws: WebSocket) {
             type: MessageType.START_ROUND,
             roomCode: message.roomCode,
             isDrawAllowed: user.userId === message.userId,
+            word: user.userId === message.userId ? game.gameWord : "",
+            wordLength: game.gameWord.length,
           })
         );
       });

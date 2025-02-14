@@ -28,6 +28,8 @@ function useSocket() {
   const [isStarted, setIsStarted] = useState(false);
   const [isSelectWord, setIsSelectWord] = useState<boolean>(true);
   const [userSelecting, setUserSelecting] = useState<string>("");
+  const [word, setWord] = useState<string>("");
+  const [wordLength, setWordLength] = useState<number>(0);
   const [isYourTurn, setIsYourTurn] = useState(false);
   const { user } = useUser();
 
@@ -142,6 +144,7 @@ function useSocket() {
 
       if (message.type === MessageType.SELECT_WORD) {
         setWords(message.words);
+        setIsStarted(true);
       }
 
       if (message.type === MessageType.SELECECTING_WORD) {
@@ -152,6 +155,8 @@ function useSocket() {
       if (message.type === MessageType.START_ROUND) {
         setIsYourTurn(message.isDrawAllowed);
         setIsSelectWord(false);
+        setWord(message.word);
+        setWordLength(message.wordLength);
       }
     };
 
@@ -184,7 +189,8 @@ function useSocket() {
     startGame,
     isStarted,
     isSelectWord,
-    word: isSelectWord,
+    word,
+    wordLength,
     userSelecting,
     isYourTurn,
   };

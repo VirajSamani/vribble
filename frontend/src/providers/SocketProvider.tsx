@@ -20,6 +20,8 @@ interface SocketContextType {
     startGame: () => void;
     userSelecting: string;
     isYourTurn: boolean;
+    word: string;
+    wordLength: number;
   };
 }
 
@@ -40,6 +42,8 @@ const defaultSocketContext: SocketContextType = {
     startGame: () => {},
     userSelecting: "",
     isYourTurn: false,
+    word: "",
+    wordLength: 0,
   },
 };
 
@@ -69,6 +73,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
     startGame,
     userSelecting,
     isYourTurn,
+    word,
+    wordLength,
   } = useSocket();
 
   return (
@@ -90,6 +96,8 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
           startGame,
           userSelecting,
           isYourTurn,
+          wordLength,
+          word,
         },
       }}
     >
