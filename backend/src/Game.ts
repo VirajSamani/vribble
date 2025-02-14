@@ -5,7 +5,7 @@ class Game {
   gameCode: string;
   Users: User[];
   currentCanvasPath: CanvasPath[] = [];
-  gameWord: string = "word";
+  gameWord: string = "";
   gameStarted: boolean = false;
   currentUser: User | null = null;
 

@@ -41,6 +41,28 @@ wss.on("connection", function connection(ws: WebSocket) {
           user.ws.send(JSON.stringify(response));
           user.ws.send(JSON.stringify(canvasResponse));
         });
+
+        if (game.gameStarted) {
+          // send select word to messaged user
+          const currentUser = game.findUser(message.userId);
+          currentUser?.ws.send(
+            JSON.stringify({
+              type: MessageType.SELECECTING_WORD,
+              roomCode: message.roomCode,
+              selectingUser: game.Users[0].userName,
+            })
+          );
+
+          if (game.gameWord) {
+            currentUser?.ws.send(
+              JSON.stringify({
+                type: MessageType.START_ROUND,
+                roomCode: message.roomCode,
+                isDrawAllowed: game.currentUser?.userId === message.userId,
+              })
+            );
+          }
+        }
       }
     }
 
@@ -49,6 +71,7 @@ wss.on("connection", function connection(ws: WebSocket) {
       if (!game) return;
 
       game.setCurrentUser();
+      game.gameStart();
 
       const wordList = game.gameWordList();
 
@@ -148,18 +171,20 @@ wss.on("connection", function connection(ws: WebSocket) {
       });
     }
 
-    if(message.type === MessageType.SELECT_WORD) {
+    if (message.type === MessageType.SELECT_WORD) {
       const game = games.findGame(message.roomCode);
       if (!game) return;
 
       game.setWord(message.word);
-     
+
       game.Users.forEach((user) => {
-        user.ws.send(JSON.stringify({
-          type: MessageType.START_ROUND,
-          roomCode: message.roomCode,
-          isDrawAllowed: user.userId === message.userId,
-        }));
+        user.ws.send(
+          JSON.stringify({
+            type: MessageType.START_ROUND,
+            roomCode: message.roomCode,
+            isDrawAllowed: user.userId === message.userId,
+          })
+        );
       });
     }
   });
