@@ -31,6 +31,7 @@ function useSocket() {
   const [word, setWord] = useState<string>("");
   const [wordLength, setWordLength] = useState<number>(0);
   const [isYourTurn, setIsYourTurn] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
   const { user } = useUser();
 
   const handleDraw = (updatedPath: CanvasPath) => {
@@ -75,7 +76,6 @@ function useSocket() {
       })
     );
     setIsStarted(true);
-    setIsSelectWord(true);
   };
 
   const selectWord = (word: string) => {
@@ -87,7 +87,7 @@ function useSocket() {
         userId: user.userId,
       })
     );
-    setIsSelectWord(false);
+    setWords([]);
   };
 
   useEffect(() => {
@@ -95,7 +95,7 @@ function useSocket() {
       return;
     }
 
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket("ws://192.168.29.197:8080");
 
     ws.onopen = () => {
       setSocket(ws);
@@ -145,11 +145,13 @@ function useSocket() {
       if (message.type === MessageType.SELECT_WORD) {
         setWords(message.words);
         setIsStarted(true);
+        setIsSelectWord(true);
       }
 
       if (message.type === MessageType.SELECECTING_WORD) {
         setUserSelecting(message.selectingUser);
         setIsStarted(true);
+        setIsSelectWord(true);
       }
 
       if (message.type === MessageType.START_ROUND) {
@@ -157,6 +159,12 @@ function useSocket() {
         setIsSelectWord(false);
         setWord(message.word);
         setWordLength(message.wordLength);
+        setGuessed(false);
+        setUserSelecting("");
+      }
+
+      if (message.type === MessageType.END_ROUND) {
+        setIsFinished(true);
       }
     };
 
@@ -193,6 +201,7 @@ function useSocket() {
     wordLength,
     userSelecting,
     isYourTurn,
+    isFinished,
   };
 }
 

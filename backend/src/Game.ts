@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import User from "./User";
+import { MessageType } from "./constants";
 
 class Game {
   gameCode: string;
@@ -8,6 +9,7 @@ class Game {
   gameWord: string = "";
   gameStarted: boolean = false;
   currentUser: User | null = null;
+  currentUserIndex: number = 0;
 
   constructor(
     gameCode: string,
@@ -43,6 +45,16 @@ class Game {
 
   clearCanvas() {
     this.currentCanvasPath = [];
+
+    const response = {
+      type: MessageType.REPLACE_PATH,
+      roomCode: this.gameCode,
+      path: [],
+    };
+
+    this.Users.forEach((user) => {
+      user.ws.send(JSON.stringify(response));
+    });
   }
 
   guessWord(word: string, userId: string) {
@@ -70,6 +82,57 @@ class Game {
 
   setWord(word: string) {
     this.gameWord = word;
+  }
+
+  isAllUserGussedWord() {
+    const usersExcludedCurrentUser = this.Users.filter(
+      (user) => user.userId !== this.currentUser?.userId
+    );
+    return usersExcludedCurrentUser.every((user) => user.isGuessed);
+  }
+
+  startRound() {
+    this.clearCanvas();
+
+    this.Users.forEach((user) => {
+      user.isGuessed = false;
+    });
+    if (this.currentUserIndex === this.Users.length - 1) {
+      this.currentUserIndex = 0;
+      const response = {
+        type: MessageType.END_ROUND,
+        roomCode: this.gameCode,
+      };
+      this.Users.forEach((user) => {
+        user.ws.send(JSON.stringify(response));
+      });
+      return;
+    }
+    this.currentUserIndex = this.currentUserIndex + 1;
+    this.currentUser = this.Users[this.currentUserIndex];
+    console.log(this.currentUserIndex, this.currentUser.userName);
+
+    const wordList = this.gameWordList();
+
+    const response = {
+      type: MessageType.SELECT_WORD,
+      words: wordList,
+      roomCode: this.gameCode,
+    };
+
+    this.currentUser?.ws.send(JSON.stringify(response));
+
+    this.Users.forEach((user) => {
+      if (user.userId === this.currentUser?.userId) {
+        return;
+      }
+      const responseForNonCurrentUser = {
+        type: MessageType.SELECECTING_WORD,
+        roomCode: this.gameCode,
+        selectingUser: this.Users[this.currentUserIndex].userName,
+      };
+      user.ws.send(JSON.stringify(responseForNonCurrentUser));
+    });
   }
 }
 

@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import { generateRandomString } from "../utils/text";
-import { getLocalStorageItem, setLocalStorageItem } from "../utils/localStorage";
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+} from "../utils/localStorage";
 
 export interface UserType {
-    userId: string;
-    userName: string;
-} 
+  userId: string;
+  userName: string;
+  setUserName: React.Dispatch<React.SetStateAction<string>>;
+}
 
 function useCreateUniqueUserIdName() {
   const [userId, setUserId] = useState<string>("");
@@ -13,21 +17,24 @@ function useCreateUniqueUserIdName() {
 
   useEffect(() => {
     const localUserId = getLocalStorageItem("userId");
-    const localUserName = getLocalStorageItem("userName");
-    if (localUserId && localUserName) {
+    if (localUserId) {
       setUserId(localUserId);
-      setUserName(localUserName);
-      return;
+    } else {
+      const userId = generateRandomString(12);
+      setUserId(userId || "");
+      setLocalStorageItem("userId", userId);
     }
-    const userId = generateRandomString(12);
-    const userName = generateRandomString(10);
-    setUserId(userId || '');
-    setUserName(userName || '');
-    setLocalStorageItem("userId", userId);
-    setLocalStorageItem("userName", userName);
+    const localUserName = getLocalStorageItem("userName");
+    if (localUserName) {
+      setUserName(localUserName);
+    } else {
+      const userName = generateRandomString(10);
+      setUserName(userName || "");
+      setLocalStorageItem("userName", userName);
+    }
   }, []);
 
-  return { userId, userName };
+  return { userId, userName, setUserName };
 }
 
 export default useCreateUniqueUserIdName;

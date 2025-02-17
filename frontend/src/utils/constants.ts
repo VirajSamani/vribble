@@ -10,7 +10,8 @@ enum MessageType {
   GUESS_SUCCESS = "guess_success",
   SELECT_WORD = "select_word",
   SELECECTING_WORD = 'selecting_word',
-  START_ROUND = 'start_round'
+  START_ROUND = 'start_round',
+  END_ROUND = 'end_round',
 }
 
 export { MessageType };

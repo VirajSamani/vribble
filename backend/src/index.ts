@@ -46,7 +46,7 @@ wss.on("connection", function connection(ws: WebSocket) {
           // send select word to messaged user
           const currentRequestingUser = game.findUser(message.userId);
 
-          if(currentRequestingUser?.userId === game.currentUser?.userId) {
+          if (currentRequestingUser?.userId === game.currentUser?.userId) {
             currentRequestingUser?.ws.send(
               JSON.stringify({
                 type: MessageType.SELECT_WORD,
@@ -70,8 +70,11 @@ wss.on("connection", function connection(ws: WebSocket) {
                 type: MessageType.START_ROUND,
                 roomCode: message.roomCode,
                 isDrawAllowed: game.currentUser?.userId === message.userId,
-                word: game.currentUser?.userId === message.userId ? game.gameWord : "",
-                wordLength: game.gameWord.length,    
+                word:
+                  game.currentUser?.userId === message.userId
+                    ? game.gameWord
+                    : "",
+                wordLength: game.gameWord.length,
               })
             );
           }
@@ -133,18 +136,9 @@ wss.on("connection", function connection(ws: WebSocket) {
       if (!game) return;
 
       game.clearCanvas();
-
-      const response = {
-        type: MessageType.REPLACE_PATH,
-        roomCode: message.roomCode,
-        path: [],
-      };
-
-      game.Users.forEach((user) => {
-        user.ws.send(JSON.stringify(response));
-      });
     }
 
+    // guess word
     if (message.type === MessageType.MESSAGE) {
       const game = games.findGame(message.roomCode);
       if (!game) return;
@@ -182,6 +176,12 @@ wss.on("connection", function connection(ws: WebSocket) {
         }
         user.ws.send(JSON.stringify(response));
       });
+
+      const isAllUserSelected = game.isAllUserGussedWord();
+
+      if (isAllUserSelected) {
+        game.startRound();
+      }
     }
 
     if (message.type === MessageType.SELECT_WORD) {

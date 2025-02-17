@@ -22,6 +22,7 @@ interface SocketContextType {
     isYourTurn: boolean;
     word: string;
     wordLength: number;
+    isFinished: boolean;
   };
 }
 
@@ -44,6 +45,7 @@ const defaultSocketContext: SocketContextType = {
     isYourTurn: false,
     word: "",
     wordLength: 0,
+    isFinished: false,
   },
 };
 
@@ -75,6 +77,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
     isYourTurn,
     word,
     wordLength,
+    isFinished,
   } = useSocket();
 
   return (
@@ -98,6 +101,7 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
           isYourTurn,
           wordLength,
           word,
+          isFinished
         },
       }}
     >
