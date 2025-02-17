@@ -110,7 +110,6 @@ class Game {
     }
     this.currentUserIndex = this.currentUserIndex + 1;
     this.currentUser = this.Users[this.currentUserIndex];
-    console.log(this.currentUserIndex, this.currentUser.userName);
 
     const wordList = this.gameWordList();
 

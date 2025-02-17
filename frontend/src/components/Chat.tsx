@@ -13,7 +13,6 @@ export default function Chat() {
 
   const handleSend = () => {
     if (message.trim()) {
-      console.log("Sending:", message); // Replace with socket emit
       sendMessage(message);
       setMessage("");
     }

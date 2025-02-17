@@ -8,7 +8,6 @@ const UserList = () => {
     game: { users },
   } = useSocketContext();
   const { user: currentUser } = useUser();
-  console.log(users);
   return (
     <Box
       sx={{

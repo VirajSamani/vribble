@@ -110,7 +110,6 @@ function useSocket() {
     };
 
     ws.onmessage = (event) => {
-      // console.log("Message received from server:", event.data);
       const message = JSON.parse(event.data);
 
       if (message.type === MessageType.JOINED_ROOM) {
