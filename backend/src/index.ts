@@ -229,7 +229,7 @@ wss.on("connection", function connection(ws: WebSocket) {
 
       game.timeout = setTimeout(() => {
         game.endRound();
-      }, 9 * 1000);
+      }, 90 * 1000);
 
       game.setWord(message.word);
 
