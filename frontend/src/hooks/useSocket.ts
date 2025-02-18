@@ -98,7 +98,7 @@ function useSocket() {
       return;
     }
 
-    const ws = new WebSocket("ws://192.168.29.197:8080");
+    const ws = new WebSocket("wss://vribble.onrender.com");
 
     ws.onopen = () => {
       setSocket(ws);
