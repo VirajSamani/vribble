@@ -70,7 +70,7 @@ class Game {
   }
 
   guessWord(word: string, userId: string) {
-    if (word === this.gameWord) {
+    if (word.toLowerCase() === this.gameWord.toLowerCase()) {
       const user = this.findUser(userId);
       if (user) {
         user.isGuessed = true;
