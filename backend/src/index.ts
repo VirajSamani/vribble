@@ -16,7 +16,13 @@ wss.on("connection", function connection(ws: WebSocket) {
     const message = JSON.parse(data.toString());
     if (message.type === MessageType.INIT) {
       // add game
-      games.addGame(message.roomCode, message.userId, message.userName, ws);
+      games.addGame(
+        message.roomCode,
+        message.userId,
+        message.userName,
+        Number(message.rounds),
+        ws
+      );
 
       // find game and send response to all users that some one joined the game
       const game = games.findGame(message.roomCode);
@@ -174,7 +180,14 @@ wss.on("connection", function connection(ws: WebSocket) {
         !message.isGuessed &&
         classGussed
       ) {
-        user.points = user.points + getTimeLeft(game.timeout);
+        let points = getTimeLeft(game.timeout);
+        if (points < 0) {
+          points = points * -1;
+        }
+        if (points < 50) {
+          points = 100 - points;
+        }
+        user.points = user.points + points;
 
         const users = game.Users.map((user) => ({
           userId: user.userId,

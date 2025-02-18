@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { generateRandomString } from "../utils/text";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -11,9 +11,10 @@ function Home() {
   const {
     user: { setUserName },
   } = useUser();
+  const [rounds, setRounds] = useState('1');
   const handleCreateRoom = () => {
     const roomCode = generateRandomString(5);
-    navigate("/game/" + roomCode);
+    navigate("/game/" + roomCode, { state: { rounds: rounds } });
   };
   const handleJoinRoom = () => {
     navigate("/game/" + code);
@@ -98,6 +99,33 @@ function Home() {
             <Typography variant="h6" fontWeight="bold" mb={2}>
               Create a Room
             </Typography>
+            {/* select box for the number of rounds */}
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              mt={2}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                Number of Rounds
+              </Typography>
+              <Select
+                sx={{
+                  width: "100%",
+                  borderRadius: "8px",
+                  textTransform: "none",
+                }}
+                value={rounds}
+                onChange={(e) => setRounds(e.target.value)}
+              >
+                <MenuItem value="1">1</MenuItem>
+                <MenuItem value="2">2</MenuItem>
+                <MenuItem value="3">3</MenuItem>
+                <MenuItem value="4">4</MenuItem>
+                <MenuItem value="5">5</MenuItem>
+              </Select>
+            </Box>
             <Button
               variant="contained"
               sx={{

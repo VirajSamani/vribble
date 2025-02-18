@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { MessageType } from "../utils/constants";
 import { useUser } from "../providers/User";
 import { CanvasPath } from "react-sketch-canvas";
@@ -34,6 +34,8 @@ function useSocket() {
   const [isYourTurn, setIsYourTurn] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const { user } = useUser();
+  // get state
+  const { state } = useLocation();
 
   const handleDraw = (updatedPath: CanvasPath) => {
     if (updatedPath.paths?.length <= 1) return;
@@ -106,6 +108,7 @@ function useSocket() {
           roomCode: roomCode,
           userId: user.userId,
           userName: user.userName,
+          rounds: state?.rounds,
         })
       );
     };

@@ -5,7 +5,7 @@ import { getFiveRandomWords } from "./words";
 
 export function getTimeLeft(timeout: any) {
   return Math.ceil(
-    (timeout._idleStart + timeout._idleTimeout - Date.now()) / 1000
+    ((timeout._idleStart + timeout._idleTimeout - Date.now()) / 1000) % 100
   );
 }
 
@@ -18,15 +18,19 @@ class Game {
   currentUser: User | null = null;
   currentUserIndex: number = 0;
   timeout: NodeJS.Timeout | null = null;
+  rounds: number;
+  currentRound: number = 0;
 
   constructor(
     gameCode: string,
     userId: string,
     userName: string,
+    rounds: number,
     ws: WebSocket
   ) {
     this.gameCode = gameCode;
     this.Users = [new User(userId, userName, ws)];
+    this.rounds = rounds;
   }
 
   addUser(userId: string, userName: string, ws: WebSocket) {
@@ -106,15 +110,19 @@ class Game {
       user.isGuessed = false;
     });
     if (this.currentUserIndex === this.Users.length - 1) {
-      this.currentUserIndex = 0;
-      const response = {
-        type: MessageType.END_ROUND,
-        roomCode: this.gameCode,
-      };
-      this.Users.forEach((user) => {
-        user.ws.send(JSON.stringify(response));
-      });
-      return;
+      this.currentUserIndex = -1;
+      this.currentRound = this.currentRound + 1;
+
+      if (this.currentRound === this.rounds) {
+        const response = {
+          type: MessageType.END_ROUND,
+          roomCode: this.gameCode,
+        };
+        this.Users.forEach((user) => {
+          user.ws.send(JSON.stringify(response));
+        });
+        return;
+      }
     }
     this.currentUserIndex = this.currentUserIndex + 1;
     this.currentUser = this.Users[this.currentUserIndex];

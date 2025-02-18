@@ -12,6 +12,10 @@ function SelectWordProvider() {
       sx={{
         zIndex: 9999,
         backgroundColor: "rgba(0, 0, 0, 0.6)", // Semi-transparent dark background
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: 2,
       }}
     >
       {userSelecting && (
