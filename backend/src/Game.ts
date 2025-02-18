@@ -1,6 +1,13 @@
 import { WebSocket } from "ws";
 import User from "./User";
 import { MessageType } from "./constants";
+import { getFiveRandomWords } from "./words";
+
+export function getTimeLeft(timeout: any) {
+  return Math.ceil(
+    (timeout._idleStart + timeout._idleTimeout - Date.now()) / 1000
+  );
+}
 
 class Game {
   gameCode: string;
@@ -10,6 +17,7 @@ class Game {
   gameStarted: boolean = false;
   currentUser: User | null = null;
   currentUserIndex: number = 0;
+  timeout: NodeJS.Timeout | null = null;
 
   constructor(
     gameCode: string,
@@ -77,7 +85,7 @@ class Game {
   }
 
   gameWordList() {
-    return ["word1", "word2", "word3", "word4", "word5"];
+    return getFiveRandomWords();
   }
 
   setWord(word: string) {
@@ -132,6 +140,18 @@ class Game {
       };
       user.ws.send(JSON.stringify(responseForNonCurrentUser));
     });
+  }
+
+  endRound() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    const userHaveGuessed = this.Users.filter((user) => user.isGuessed).length;
+    const points = Math.floor(100 / this.Users.length) * userHaveGuessed;
+    if (this.currentUser) {
+      this.currentUser.points = this.currentUser?.points + points;
+    }
+    this.startRound();
   }
 }
 

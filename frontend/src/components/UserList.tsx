@@ -32,7 +32,7 @@ const UserList = () => {
         >
           <CardContent sx={{ flexGrow: 2, padding: "10px" }}>
             <Typography fontWeight="bold">
-              {user.userName}{" "}
+              {user.userName} ({user.points})
               {user.userId === currentUser.userId && (
                 <>
                   (

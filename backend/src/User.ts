@@ -6,6 +6,7 @@ class User {
     isActive: boolean;
     ws: WebSocket;
     isGuessed: boolean = false;
+    points: number = 0;
 
     constructor(userId: string, userName: string, ws: WebSocket) {
         this.userId = userId;

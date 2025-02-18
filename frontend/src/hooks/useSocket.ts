@@ -8,6 +8,7 @@ export interface User {
   userId: string;
   userName: string;
   isActive: boolean;
+  points: number;
 }
 
 export interface Message {

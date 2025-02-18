@@ -2,6 +2,7 @@ import express from "express";
 import { WebSocket, WebSocketServer } from "ws";
 import Games from "./Games";
 import { MessageType } from "./constants";
+import { getTimeLeft } from "./Game";
 
 const app = express();
 const httpServer = app.listen(8080);
@@ -25,6 +26,7 @@ wss.on("connection", function connection(ws: WebSocket) {
           userId: user.userId,
           userName: user.userName,
           isActive: user.isActive,
+          points: user.points,
         }));
         const response = {
           type: MessageType.JOINED_ROOM,
@@ -144,8 +146,8 @@ wss.on("connection", function connection(ws: WebSocket) {
       if (!game) return;
 
       // handler to check the word is guessed or not
-      const isGuessed =
-        game.guessWord(message.message, message.userId) || message.isGuessed;
+      const classGussed = game.guessWord(message.message, message.userId);
+      const isGuessed = classGussed || message.isGuessed;
 
       const response = {
         type: MessageType.MESSAGE,
@@ -166,6 +168,30 @@ wss.on("connection", function connection(ws: WebSocket) {
         user.ws.send(JSON.stringify(successResponse));
       }
 
+      if (
+        user &&
+        user.userId !== game.currentUser?.userId &&
+        !message.isGuessed &&
+        classGussed
+      ) {
+        user.points = user.points + getTimeLeft(game.timeout);
+
+        const users = game.Users.map((user) => ({
+          userId: user.userId,
+          userName: user.userName,
+          isActive: user.isActive,
+          points: user.points,
+        }));
+        const response = {
+          type: MessageType.JOINED_ROOM,
+          users: users,
+          roomCode: message.roomCode,
+        };
+        game.Users.forEach((user) => {
+          user.ws.send(JSON.stringify(response));
+        });
+      }
+
       game.Users.forEach((user) => {
         if (isGuessed) {
           if (!user.isGuessed && user.userId !== message.userId) {
@@ -180,13 +206,17 @@ wss.on("connection", function connection(ws: WebSocket) {
       const isAllUserSelected = game.isAllUserGussedWord();
 
       if (isAllUserSelected) {
-        game.startRound();
+        game.endRound();
       }
     }
 
     if (message.type === MessageType.SELECT_WORD) {
       const game = games.findGame(message.roomCode);
       if (!game) return;
+
+      game.timeout = setTimeout(() => {
+        game.endRound();
+      }, 9 * 1000);
 
       game.setWord(message.word);
 
