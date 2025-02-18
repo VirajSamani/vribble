@@ -98,7 +98,7 @@ function useSocket() {
       return;
     }
 
-    const ws = new WebSocket("wss://vribble.onrender.com");
+    const ws = new WebSocket("wss://vribble-backend.onrender.com");
 
     ws.onopen = () => {
       setSocket(ws);
